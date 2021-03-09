@@ -2,9 +2,9 @@ function mreyetrack_2D
 
 addpath('Functions')
 
-%filename = 'bSSFP_Slow_Blink_Sagittal';
+filename = 'bSSFP_Slow_Blink_Sagittal';
 %filename = 'bSSFP_Saccade_Axial';
-filename = 'bSSFP_Blink_Saccade_Axial';
+%filename = 'bSSFP_Blink_Saccade_Axial';
 
 %% Load raw MR data & Eye struct from 3D segmentation 
 MR_2D_raw = load(sprintf('Data/%s', filename));

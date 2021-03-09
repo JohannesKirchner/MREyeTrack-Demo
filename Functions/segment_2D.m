@@ -35,7 +35,7 @@ options = optimoptions('patternsearch', ...
                        'PollMethod', 'GPSPositiveBasis2N');
  
 % create time vector                   
-MR.image_range = 1:100;%size(MR.image{1},3);
+MR.image_range = 1:size(MR.image{1},3);
 MR.t = (MR.image_range-1)*MR.sampling_interval;
 
 %% Eyeball segmentation

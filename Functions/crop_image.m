@@ -60,16 +60,19 @@ for iSide = 1:length(img)
     
     %% Norm image intensities
     % Normalize image intensities to the mean intensity around eyeball
-    % center
+    % center. Constrain image intensities to at maximum 25% above eyeball
+    % center intensity.
     idx_center = floor(cropping_window/2)+1 + (-2:2);
     if isempty(MR.sampling_interval)
         center = img{iSide}(idx_center, idx_center, idx_center);
         MR.mean_intensity{iSide} = mean(center(:));
     else
         center = img{iSide}(idx_center, idx_center, 1);
-        MR.mean_intensity{iSide} = mean(center(:));
+        MR.mean_intensity{iSide} = movmean(mean(center,[1,2]), 20);
     end
-    MR.image{iSide} = img{iSide} / MR.mean_intensity{iSide};
+    img{iSide} = img{iSide} ./ MR.mean_intensity{iSide};
+    %img{iSide}(img{iSide} > 1.25) = 1.25;
+    MR.image{iSide} = img{iSide};
     
     fprintf('completed\n')
 end

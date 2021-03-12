@@ -41,7 +41,7 @@ MR.t = (MR.image_range-1)*MR.sampling_interval;
 %% Eyeball segmentation
 fprintf('\n\n###### 2D Eyeball Segmentation ######\n')
 for iEye = 1:numel(MR.image)
-    fprintf('Segmenting Eye %d/%d...\n', iEye, numel(MR.image))
+    fprintf('Eye %d/%d\n', iEye, numel(MR.image))
     
     % Adjust Eye to pixel spacing
     Eye(iEye).x0_scl  = Eye(iEye).x0_scl / P.pixel_mm;
@@ -53,22 +53,23 @@ for iEye = 1:numel(MR.image)
     
     
     % Choose number of grid points roughly proportional to ellipse perimeter
-    P.N_scl = round(4 * 2*pi*max(Eye(iEye).rad_scl));
-    P.N_crn = round(4 * 2*pi*max(Eye(iEye).rad_crn));
-    P.N_lns = round(4 * 2*pi*max(Eye(iEye).rad_lns));
+    P.N_scl = round(P.segment_2D.grid_points_px * 2*pi*max(Eye(iEye).rad_scl));
+    P.N_crn = round(P.segment_2D.grid_points_px * 2*pi*max(Eye(iEye).rad_crn));
+    P.N_lns = round(P.segment_2D.grid_points_px * 2*pi*max(Eye(iEye).rad_lns));
     
     
     % Loop over images
+    n_Img = length(MR.image_range);
     n_Sca = length(P.segment_2D.scaling_mm2deg);
-    b   = nan(6, n_Sca, length(MR.image_range));
-    GoF = nan(4, n_Sca, length(MR.image_range));
+    b   = nan(6, n_Sca, n_Img);
+    GoF = nan(4, n_Sca, n_Img);
     MR.b{iEye}       = [];
     MR.GoF{iEye}     = [];
     MR.max_GoF{iEye} = [];
     MR.max_b{iEye}   = [];
-    for iImg = 1:length(MR.image_range)
-        if P.segment_2D.print_progress && rem(iImg-1,100) == 0
-            fprintf('Segmenting Image %d/%d\n', iImg, length(MR.image_range))
+    for iImg = 1:n_Img
+        if rem(iImg-1,100) == 0
+            fprintf('Segmenting Images %d-%d/%d\n', iImg, min(iImg+99,n_Img), n_Img)
         end
         
         % Calculate the image gradients. Careful, the output of imgradientxy
@@ -116,12 +117,6 @@ for iEye = 1:numel(MR.image)
         [~, idx_max_GoF] = max(squeeze(GoF(1,:,iImg)));
         MR.max_b{iEye}(:,iImg)   = b(:,idx_max_GoF,iImg);
         MR.max_GoF{iEye}(:,iImg) = GoF(:,idx_max_GoF,iImg);
-        MR.x{iEye}(iImg) = MR.max_b{iEye}(1,iImg);
-        MR.y{iEye}(iImg) = MR.max_b{iEye}(2,iImg);
-        MR.z{iEye}(iImg) = MR.max_b{iEye}(3,iImg);
-        MR.rot_x{iEye}(iImg) = MR.max_b{iEye}(4,iImg);
-        MR.rot_y{iEye}(iImg) = MR.max_b{iEye}(5,iImg);
-        MR.rot_z{iEye}(iImg) = MR.max_b{iEye}(6,iImg);
         MR.P{iEye} = P;
         
         % Update boundaries to restrict unreasonable out-of-plane motion
@@ -151,8 +146,8 @@ for iEye = 1:numel(MR.image)
     
     
     if P.segment_2D.plot_segmentation
-        plot_2D_segmentation(MR, Eye, iEye)
         plot_parameter_dynamic(MR, iEye)
+        plot_2D_segmentation(MR, Eye, iEye)
     end
 end
 end

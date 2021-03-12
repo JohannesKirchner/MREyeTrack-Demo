@@ -10,8 +10,9 @@ vec = P.T' * vec;
 idx  = int32(x(1,:)) + (int32(x(2,:))-1) * P.imsz + (int32(x(3,:))-1) * P.imsz^2;
 in_image = all(idx >= 1 & idx <= P.imsz^3);
 
-% Calculate the inner product of the template with the MRI image gradients
-if in_image && vol > 1000
+% Calculate the inner product of the template with the MRI image gradients,
+% ensure a minimal corneal volume to save some computation time
+if in_image && vol > 100
     m_scl = mean(sum(vec(:, bdy) .* grad(idx( bdy),:)'));
     m_crn = mean(sum(vec(:,~bdy) .* grad(idx(~bdy),:)'));
     

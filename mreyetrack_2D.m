@@ -2,16 +2,19 @@ function mreyetrack_2D
 
 addpath('Functions')
 
-filename = 'bSSFP_Slow_Blink_Sagittal';
-%filename = 'bSSFP_Saccade_Axial';
-%filename = 'bSSFP_Blink_Saccade_Axial';
+%% Choose participant and sequence
+participant = 'P2';
+%sequence = 'bSSFP_Saccade_Axial';
+%sequence = 'bSSFP_Blink_Saccade_Axial';
+%sequence = 'bSSFP_Slow_Blink_Sagittal';
+sequence = 'bSSFP_Eye_Closure_Sagittal';
 
 %% Load raw MR data & Eye struct from 3D segmentation 
-MR_2D_raw = load(sprintf('Data/%s', filename));
-if exist('Data/Eye.mat', 'file')
-    load('Data/Eye', 'Eye')
+MR_2D_raw = load(sprintf('Data/%s/%s', participant, sequence));
+if exist(sprintf('Data/%s/Eye.mat', participant), 'file')
+    load(sprintf('Data/%s/Eye.mat', participant), 'Eye')
 else
-    error('You need to run "mreyetrack_3D" first to ')
+    error('You need to run "mreyetrack_3D" first to establish the 3D eyeball model!')
 end
 
 %% Find eyeball center & crop the images
@@ -25,8 +28,8 @@ MR_2D = crop_image(MR_2D_raw, P);
 
 %% bFFE-Scan Eyeball segmentation
 P.segment_2D.plot_segmentation = 1;
-P.segment_2D.print_progress    = 1;
 P.segment_2D.include_torsion   = 0;
+P.segment_2D.grid_points_px    = 4;
 P.segment_2D.scaling_mm2deg    = [0.5, 1, 5, 10, 50];
 MR_2D = segment_2D(MR_2D, Eye, P);
-save('Data/MR_2D', 'MR_2D')
+save(sprintf('Data/%s/%s_analysed', participant, sequence), 'MR_2D')

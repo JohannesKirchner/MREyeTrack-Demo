@@ -11,9 +11,14 @@ fprintf('\n###### Image Cropping ######\nPeform fast radial symmetry transform..
 % second cell position (all sagittal scans only used the right eye).
 img = {};
 if isempty(MR.sampling_interval)
-    n = floor(size(MR.image,3)/2);
-    img{1} = MR.image(:,:,n+1:end);
-    img{2} = MR.image(:,:,  1:n  );
+    if strcmp(MR.plane, 'sagittal')
+        n = floor(size(MR.image,3)/2);
+        img{1} = MR.image(:,:,n+1:end);
+        img{2} = MR.image(:,:,  1:n  );
+    else
+        n = 0;
+        img{1} = MR.image;
+    end
 else
     MR.image = MR.image(:,:,51:end);
     if strcmp(MR.plane, 'axial')

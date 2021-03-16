@@ -3,7 +3,7 @@ function mreyetrack_3D
 addpath('Functions')
 
 %% Load raw MR data
-participant = 'P2';
+participant = 'Sim';
 MR_3D_raw = load(sprintf('Data/%s/T2_weighted_3D_scan', participant));
 
 %% Find eyeball center & crop the images

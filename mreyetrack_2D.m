@@ -3,11 +3,11 @@ function mreyetrack_2D
 addpath('Functions')
 
 %% Choose participant and sequence
-participant = 'P2';
+participant = 'Sim';
 %sequence = 'bSSFP_Saccade_Axial';
 %sequence = 'bSSFP_Blink_Saccade_Axial';
-%sequence = 'bSSFP_Slow_Blink_Sagittal';
-sequence = 'bSSFP_Eye_Closure_Sagittal';
+sequence = 'bSSFP_Slow_Blink_Sagittal';
+%sequence = 'bSSFP_Eye_Closure_Sagittal';
 
 %% Load raw MR data & Eye struct from 3D segmentation 
 MR_2D_raw = load(sprintf('Data/%s/%s', participant, sequence));

@@ -20,10 +20,10 @@ save(sprintf('Data/%s/T2_weighted_3D_scan_analysed', participant), 'MR_3D')
 % use the high-definition T2-weighted 3D scan for an accurate segmentation 
 % of sclera, cornea and lens as ellipsoids. Cornea center is fixed at a
 % choosable distance to sclera center. Lens indentation can also be defined 
-% in the parameters. In order to find the global solution, various scalings 
-% between parameters of unit mm and deg are considered. Number of grid
-% points per pixel is also adjustable. The results are stored in the 'Eye' 
-% struct.
+% in the parameters. These are chosen as in the publication In order to find 
+% the global solution, various scalings  between parameters of unit mm and 
+% deg are considered. Number of grid points per pixel is also adjustable. The 
+% results are stored in the 'Eye'  struct.
 P.segment_3D.plot_segmentation = 1;
 P.segment_3D.cornea_center_mm  = 7;
 P.segment_3D.lens_indent_mm    = 1.5;

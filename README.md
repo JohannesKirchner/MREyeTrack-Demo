@@ -3,7 +3,7 @@ MREyeTrack is a fully automated method to analyse eye kinematics in MR data, as 
 
 Saccades                   |  Blinks
 :-------------------------:|:-------------------------:
-![](Saccade.gif)           |  ![](Blink.gif)
+![](Gif/Saccade.gif)           |  ![](Gif/Blink.gif)
 
 ## Demo Dataset
 This demo dataset consists of the following three exemplary MR scans of the same participant:

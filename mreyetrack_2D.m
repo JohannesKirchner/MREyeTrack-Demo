@@ -3,7 +3,7 @@ function mreyetrack_2D
 addpath('Functions')
 
 %% Choose participant and sequence
-participant = 'Sim';
+participant = 'P1';
 %sequence = 'bSSFP_Saccade_Axial';
 %sequence = 'bSSFP_Blink_Saccade_Axial';
 sequence = 'bSSFP_Slow_Blink_Sagittal';

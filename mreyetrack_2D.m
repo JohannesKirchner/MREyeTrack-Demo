@@ -4,10 +4,8 @@ addpath('Functions')
 
 %% Choose participant and sequence
 participant = 'P1';
-%sequence = 'bSSFP_Saccade_Axial';
-%sequence = 'bSSFP_Blink_Saccade_Axial';
-sequence = 'bSSFP_Slow_Blink_Sagittal';
-%sequence = 'bSSFP_Eye_Closure_Sagittal';
+sequence = 'bSSFP_Saccade_Axial';
+%sequence = 'bSSFP_Slow_Blink_Sagittal';
 
 %% Load raw MR data & Eye struct from 3D segmentation 
 MR_2D_raw = load(sprintf('Data/%s/%s', participant, sequence));
@@ -26,7 +24,11 @@ P.cropping.radial_symmetry_mm = 12;
 P.cropping.window_size_mm     = 35;
 MR_2D = crop_image(MR_2D_raw, P);
 
-%% bFFE-Scan Eyeball segmentation
+%% bSSFP Eyeball projection segmentation
+% estimate eye motion in the dynamic bSSFP by finding the optimal 2D
+% projection of the 3D eyeball model. In order to find the global solution, 
+% various scalings  between parameters of unit mm and  deg are considered. 
+% Number of grid points per pixel is also adjustable.
 P.segment_2D.plot_segmentation = 1;
 P.segment_2D.include_torsion   = 0;
 P.segment_2D.grid_points_px    = 4;

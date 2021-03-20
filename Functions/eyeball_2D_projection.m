@@ -28,9 +28,8 @@ else
     v_lns = [];
 end
 
-% Calculate grid points
+% Sclera grid points and normal vector
 if ~isempty(v_scl)
-    % Sclera grid points
     v_scl = P.T' * v_scl;
     v_scl(:,1) = v_scl(:,1) + P.img_center;
     [x0_scl, rad_scl, phi_scl] = slice2ellipse(v_scl, [1;0;0], [0;1;0]);
@@ -38,72 +37,71 @@ if ~isempty(v_scl)
     R_scl  = rot_2D(phi_scl);
     x_scl  = x0_scl + R_scl * map_ellipse(rad_scl, P.N_scl);
     
-    % If the current parameter range intersects the lens, continue by mapping it too
-    if ~isempty(v_lns)
-        % Lens
-        v_lns = P.T' * v_lns;
-        v_lns(:,1) = v_lns(:,1) + P.img_center;
-        [x0_lns, r_lns, phi_lns] = slice2ellipse(v_lns, [1;0;0], [0;1;0]);
-        x0_lns = reshape(x0_lns,2,1);
-        R_lns  = rot_2D(phi_lns);
-        x_lns  = x0_lns + R_lns * map_ellipse(r_lns, P.N_lns);
-        
-        % Combine lens & sclera. In order to do so, remove all lens grid points
-        % lying outside of the sclera minus indent
-        in_scl  = in_ellipse(x_lns, x0_scl, rad_scl - lens_indent_px, phi_scl);
-        x_lns   = x_lns(:,in_scl);
-        
-        % Normal Vectors of the lens grid points
-        vec_lns = R_lns * diag(1./r_lns.^2) * R_lns' * (x_lns - x0_lns);
-        vec_lns = vec_lns ./ vecnorm(vec_lns);
-    else
-        x_lns     = [];
-        vec_lns   = [];
-    end
-    
-    % If the current parameter range intersects the cornea, continue by mapping it too
-    if ~isempty(v_crn)
-        % Cornea
-        v_crn = P.T' * v_crn;
-        v_crn(:,1) = v_crn(:,1) + P.img_center;
-        [x0_crn, r_crn, phi_crn] = slice2ellipse(v_crn, [1;0;0], [0;1;0]);
-        x0_crn = reshape(x0_crn,2,1);
-        R_crn  = rot_2D(phi_crn);
-        x_crn  = x0_crn + R_crn * map_ellipse(r_crn, P.N_crn);
-        
-        % Combine cornea & body. In order to do so remove, all body grid points
-        % lying inside the cornea ellipse and all cornea grid points lying 
-        % inside of the body ellipse
-        out_crn = ~in_ellipse(x_scl, x0_crn, r_crn, phi_crn);
-        x_scl   = x_scl(:,out_crn);
-        out_scl = ~in_ellipse(x_crn, x0_scl, rad_scl, phi_scl);
-        x_crn   = x_crn(:,out_scl);
-        
-        % Normal Vectors of the cornea grid points
-        vec_crn = -R_crn * diag(1./r_crn.^2) * R_crn' * (x_crn - x0_crn);
-        vec_crn = vec_crn ./ vecnorm(vec_crn);
-    else
-        x_crn     = [];
-        vec_crn   = [];
-    end    
-    
     % Normal Vectors of the sclera grid points
     vec_scl = -R_scl * diag(1./rad_scl.^2) * R_scl' * (x_scl - x0_scl);
     vec_scl = vec_scl ./ vecnorm(vec_scl);
-    
-    % Combination to joint variables
-    x   = [x_scl  , x_lns  , x_crn  ];
-    vec = [vec_scl, vec_lns, vec_crn];
-    scl = [ true(1,size(x_scl,2)), false(1,size(x_lns,2)), false(1,size(x_crn,2))];
-    lns = [false(1,size(x_scl,2)),  true(1,size(x_lns,2)), false(1,size(x_crn,2))];
-    crn = [false(1,size(x_scl,2)), false(1,size(x_lns,2)),  true(1,size(x_crn,2))];  
 else
-    x   = [];
-    vec = [];
-    scl = []; 
-    lns = [];
-    crn = [];
+    x_scl   = [];
+    vec_scl = [];
 end
+
+% Cornea grid points and normal vector
+if ~isempty(v_crn)
+    v_crn = P.T' * v_crn;
+    v_crn(:,1) = v_crn(:,1) + P.img_center;
+    [x0_crn, rad_crn, phi_crn] = slice2ellipse(v_crn, [1;0;0], [0;1;0]);
+    x0_crn = reshape(x0_crn,2,1);
+    R_crn  = rot_2D(phi_crn);
+    x_crn  = x0_crn + R_crn * map_ellipse(rad_crn, P.N_crn);
+    
+    % Normal Vectors of the cornea grid points
+    vec_crn = -R_crn * diag(1./rad_crn.^2) * R_crn' * (x_crn - x0_crn);
+    vec_crn = vec_crn ./ vecnorm(vec_crn);
+else
+    x_crn     = [];
+    vec_crn   = [];
+end
+
+% Combine sclera & cornea. In order to do so remove, all sclera grid points
+% lying inside the cornea ellipse and all cornea grid points lying
+% inside of the sclera ellipse
+if ~isempty(v_scl) && ~isempty(v_crn)
+    out_crn = ~in_ellipse(x_scl, x0_crn, rad_crn, phi_crn);
+    x_scl   = x_scl(:,out_crn);
+    vec_scl = vec_scl(:,out_crn);
+    out_scl = ~in_ellipse(x_crn, x0_scl, rad_scl, phi_scl);
+    x_crn   = x_crn(:,out_scl);
+    vec_crn = vec_crn(:,out_scl);
+end
+    
+% Lens grid points and normal vector
+if ~isempty(v_lns) && ~isempty(v_scl)
+    v_lns = P.T' * v_lns;
+    v_lns(:,1) = v_lns(:,1) + P.img_center;
+    [x0_lns, rad_lns, phi_lns] = slice2ellipse(v_lns, [1;0;0], [0;1;0]);
+    x0_lns = reshape(x0_lns,2,1);
+    R_lns  = rot_2D(phi_lns);
+    x_lns  = x0_lns + R_lns * map_ellipse(rad_lns, P.N_lns);
+    
+    % Combine lens & sclera. In order to do so, remove all lens grid points
+    % lying outside of the sclera minus indent
+    in_scl  = in_ellipse(x_lns, x0_scl, rad_scl - lens_indent_px, phi_scl);
+    x_lns   = x_lns(:,in_scl);
+    
+    % Normal Vectors of the lens grid points
+    vec_lns = R_lns * diag(1./rad_lns.^2) * R_lns' * (x_lns - x0_lns);
+    vec_lns = vec_lns ./ vecnorm(vec_lns);
+else
+    x_lns     = [];
+    vec_lns   = [];
+end
+
+% Combination to joint variables
+x   = [x_scl  , x_lns  , x_crn  ];
+vec = [vec_scl, vec_lns, vec_crn];
+scl = [ true(1,size(x_scl,2)), false(1,size(x_lns,2)), false(1,size(x_crn,2))];
+lns = [false(1,size(x_scl,2)),  true(1,size(x_lns,2)), false(1,size(x_crn,2))];
+crn = [false(1,size(x_scl,2)), false(1,size(x_lns,2)),  true(1,size(x_crn,2))];
 
 end
 

@@ -44,7 +44,7 @@ for i = 1:3
     uicontrol('Style', 'slider', ...
         'Min', 1, ...
         'Max', P.imsz, ...
-        'Value', 41, ...
+        'Value', P.img_center(i), ...
         'SliderStep', [1/(P.imsz-1), 10/(P.imsz-1)], ...
         'Position', slider_pos, ...
         'Callback', {@SliceSlider, img, Eye, ax, P, txt, i});
@@ -100,9 +100,11 @@ function map_slice(iAx, d, img, Eye, ax, P)
     P.d = d - P.img_center(iAx);
     
     [x, ~, bdy, lns, crn] = eyeball_2D_projection([0,0,0], [0,0,0], Eye, P);
-    plot(ax(iAx), x(2,bdy), x(1,bdy), '.', 'color', [0.9922,0.6941,0.2784])
-    plot(ax(iAx), x(2,crn), x(1,crn), '.', 'color', [0.4588,0.7333,0.9922])
-    plot(ax(iAx), x(2,lns), x(1,lns), '.', 'color', [0.4313,0.7961,0.2353])
+    if ~isempty(x)
+        plot(ax(iAx), x(2,bdy), x(1,bdy), '.', 'color', [0.9922,0.6941,0.2784])
+        plot(ax(iAx), x(2,crn), x(1,crn), '.', 'color', [0.4588,0.7333,0.9922])
+        plot(ax(iAx), x(2,lns), x(1,lns), '.', 'color', [0.4313,0.7961,0.2353])
+    end
     
     P.T = P.T / [v_1,v_2,v_n];
 end

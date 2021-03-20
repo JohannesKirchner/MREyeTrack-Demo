@@ -20,9 +20,9 @@ P = MR.P{iEye};
 % Initialize Figure
 t0 = 1;
 fig = figure;
-fig.Position(3:4) = 700*[0.95,1];
+fig.Position(3:4) = 600*[0.95,1];
 for i = 1:16
-    ax(i) = subplot('position', [rem(i-1,4)*0.25 + 0.01, 1-ceil(i/4)*0.23 - 0.02, 0.23, 0.21]);
+    ax(i) = subplot('position', [rem(i-1,4)*0.25 + 0.01, 1-ceil(i/4)*0.23, 0.23, 0.20]);
 end
 set(ax, 'NextPlot', 'add')
 draw_image([], [], ax, img, t, b, Eye, P)

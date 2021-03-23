@@ -122,15 +122,15 @@ for iEye = 1:numel(MR.image)
         % Update boundaries to restrict unreasonable out-of-plane motion
         if iImg == 1
             if strcmp(MR.plane, 'axial')
-                lb(3) = MR.max_b{iEye}(3,iImg) - 1;
-                ub(3) = MR.max_b{iEye}(3,iImg) + 1;
-                lb(4) = MR.max_b{iEye}(4,iImg) - 5;
-                ub(4) = MR.max_b{iEye}(4,iImg) + 5;
+                lb(3) = MR.max_b{iEye}(3,iImg) - P.segment_2D.out_of_plane_translation;
+                ub(3) = MR.max_b{iEye}(3,iImg) + P.segment_2D.out_of_plane_translation;
+                lb(4) = MR.max_b{iEye}(4,iImg) - P.segment_2D.out_of_plane_rotation;
+                ub(4) = MR.max_b{iEye}(4,iImg) + P.segment_2D.out_of_plane_rotation;
             elseif strcmp(MR.plane, 'sagittal')
-                lb(1) = MR.max_b{iEye}(1,iImg) - 1;
-                ub(1) = MR.max_b{iEye}(1,iImg) + 1;
-                lb(6) = MR.max_b{iEye}(6,iImg) - 5;
-                ub(6) = MR.max_b{iEye}(6,iImg) + 5;
+                lb(1) = MR.max_b{iEye}(1,iImg) - P.segment_2D.out_of_plane_translation;
+                ub(1) = MR.max_b{iEye}(1,iImg) + P.segment_2D.out_of_plane_translation;
+                lb(6) = MR.max_b{iEye}(6,iImg) - P.segment_2D.out_of_plane_rotation;
+                ub(6) = MR.max_b{iEye}(6,iImg) + P.segment_2D.out_of_plane_rotation;
             end
         end
     end

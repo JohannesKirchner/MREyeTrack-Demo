@@ -1,5 +1,5 @@
 # MREyeTrack
-MREyeTrack is a fully automated method to analyse eye kinematics in MR data, as described in *link_to_upcoming_publication*.
+MREyeTrack is a fully automated method to analyse eye kinematics in MR data, as described in [*Kirchner, Watson & Lappe - Real-time MRI reveals unique insight into the full kinematics of eye movements (2021)*](https://www.eneuro.org/content/9/1/ENEURO.0357-21.2021).
 
 Saccades                   |  Blinks
 :-------------------------:|:-------------------------:
